@@ -3,12 +3,18 @@ import {
   Card,
   CardActions,
   CardContent,
+  Checkbox,
   Stack,
   Typography,
 } from "@mui/material";
 import { Task } from "../../../types/Tasks";
 import { useAppDispatch } from "../../../hooks/reduxHooks";
-import { deleteTask, editTask, showModal } from "../tasksSlice";
+import {
+  deleteTask,
+  completedUpdate,
+  selectTask,
+  showModal,
+} from "../tasksSlice";
 
 type TaskCardProps = {
   task: Task;
@@ -21,11 +27,15 @@ const TaskCard = ({ task }: TaskCardProps) => {
 
   const handleClickEditTask = () => {
     dispatch(showModal());
-    dispatch(editTask(task));
+    dispatch(selectTask(task));
   };
 
   const handleClickDeleteTask = (taskId: number) => {
     dispatch(deleteTask(taskId));
+  };
+
+  const handleOnchangeIsCompleted = () => {
+    dispatch(completedUpdate(id));
   };
 
   return (
@@ -41,13 +51,22 @@ const TaskCard = ({ task }: TaskCardProps) => {
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
             {title}
           </Typography>
-          <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            {isCompleted ? "Completed" : "Not yet completed"}
-          </Typography>
+          <Checkbox
+            checked={isCompleted}
+            onChange={handleOnchangeIsCompleted}
+            inputProps={{ "aria-label": "controlled" }}
+          />
         </Stack>
 
-        <Typography variant="body2">{isCompleted}</Typography>
-        <Typography variant="body2">{description}</Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            fontStyle: "italic",
+            color: "gray"
+          }}
+        >
+          {description && description.length > 0 ? description : ""}
+        </Typography>
       </CardContent>
       <CardActions
         sx={{

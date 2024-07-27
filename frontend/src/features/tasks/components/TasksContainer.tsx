@@ -1,12 +1,32 @@
 import { Container, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "../../../hooks/reduxHooks";
 import { Task } from "../../../types/Tasks";
-import { selectList } from "../tasksSlice";
+import { searchString, selectTasksList } from "../tasksSlice";
 import TaskCard from "./TaskCard";
 
 const TasksContainer = () => {
-  const taskList: Task[] = useAppSelector(selectList);
-  if (!taskList.length) return <Typography>No tasks yet. Add some tasks today!</Typography>;
+  const taskList: Task[] = useAppSelector(selectTasksList);
+
+  const searchStr = useAppSelector(searchString);
+  console.log("🚀 ~ TasksContainer ~ searchStr:", searchStr);
+
+  const filteredTasks = taskList.filter((task) =>
+    task.title.toLowerCase().includes(searchStr.toLowerCase())
+  );
+
+  const hasTask = () => taskList.length > 0;
+
+  const hasFilteredTask = () => filteredTasks.length > 0;
+
+  if (!hasTask)
+    return <Typography>No task yet. Add some tasks today!</Typography>;
+
+  if (!hasFilteredTask)
+    return (
+      <Typography fontStyle="italic">0 task found on "{searchStr}"</Typography>
+    );
+
+  const taskListArray = searchStr.length === 0 ? taskList : filteredTasks;
 
   return (
     <Container
@@ -18,11 +38,21 @@ const TasksContainer = () => {
     >
       <Stack justifyContent="center" gap={2}>
         {taskList &&
-          Array.isArray(taskList) &&
-          taskList.map((task) => {
-            return <TaskCard task={task} />;
+          Array.isArray(taskListArray) &&
+          taskListArray.map((task) => {
+            return <TaskCard key={task?.id} task={task} />;
           })}
       </Stack>
+      <Typography
+        variant="caption"
+        fontStyle="italic"
+        sx={{
+          mt: 2,
+          color: "gray",
+        }}
+      >
+        {taskListArray.length} tasks found
+      </Typography>
     </Container>
   );
 };

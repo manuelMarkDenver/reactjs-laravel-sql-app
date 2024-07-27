@@ -1,25 +1,17 @@
-import {
-  Box,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
-  Dialog,
-} from "@mui/material";
+import { Box, DialogTitle, DialogContent, Dialog } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
 import {
   hideModal,
   modalState,
   resetTask,
-  selectTask,
+  selectedTask,
 } from "../features/tasks/tasksSlice";
+import Form from "./Form";
 
 const GlobalModal = () => {
   const dispatch = useAppDispatch();
 
-  const task = useAppSelector(selectTask);
-
+  const task = useAppSelector(selectedTask);
   const openModal = useAppSelector(modalState);
 
   const handleClose = () => {
@@ -35,25 +27,11 @@ const GlobalModal = () => {
         aria-labelledby="responsive-dialog-title"
       >
         <DialogTitle id="responsive-dialog-title">
-          {task ? "Edit" : "Add"}
+          {task ? `Edit "${task?.title}" Task` : "Add Task"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {JSON.stringify(task)}
-            <br />
-            <br />
-            Let Google help apps determine location. This means sending
-            anonymous location data to Google, even when no apps are running.
-          </DialogContentText>
+          <Form onClose={handleClose} task={task} />
         </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleClose}>
-            Disagree
-          </Button>
-          <Button onClick={handleClose} autoFocus>
-            Agree
-          </Button>
-        </DialogActions>
       </Dialog>
     </Box>
   );
