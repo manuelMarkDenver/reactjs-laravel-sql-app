@@ -1,4 +1,4 @@
-import { Container, Stack, Typography } from "@mui/material";
+import { Box, Container, Stack, Typography } from "@mui/material";
 import { useAppSelector } from "../../../hooks/reduxHooks";
 import { Task } from "../../../types/Tasks";
 import { searchString, selectTasksList } from "../tasksSlice";
@@ -36,13 +36,15 @@ const TasksContainer = () => {
         flexDirection: "column",
       }}
     >
-      <Stack justifyContent="center" gap={2}>
-        {taskList &&
-          Array.isArray(taskListArray) &&
-          taskListArray.map((task) => {
-            return <TaskCard key={task?.id} task={task} />;
-          })}
-      </Stack>
+      <Box height="70vh" overflow="auto">
+        <Stack justifyContent="center" gap={2}>
+          {taskList &&
+            Array.isArray(taskListArray) &&
+            taskListArray.map((task) => {
+              return <TaskCard key={task?.id} task={task} />;
+            })}
+        </Stack>
+      </Box>
       <Typography
         variant="caption"
         fontStyle="italic"

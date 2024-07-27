@@ -8,7 +8,7 @@ const SearchBar = () => {
 
   const dispatch = useDispatch();
 
-  const handleSearchStringOnChange = (e) => {
+  const handleSearchStringOnChange = (e: any) => {
     dispatch(searchTask(e.target.value));
   };
 
