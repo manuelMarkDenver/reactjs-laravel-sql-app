@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Task } from "../../../types/Tasks";
 import { useAppDispatch } from "../../../hooks/reduxHooks";
-import { deleteTask } from "../tasksSlice";
+import { deleteTask, editTask, showModal } from "../tasksSlice";
 
 type TaskCardProps = {
   task: Task;
@@ -19,7 +19,12 @@ const TaskCard = ({ task }: TaskCardProps) => {
 
   const dispatch = useAppDispatch();
 
-  const handleClickTaskDelete = (taskId: number) => {
+  const handleClickEditTask = () => {
+    dispatch(showModal());
+    dispatch(editTask(task));
+  };
+
+  const handleClickDeleteTask = (taskId: number) => {
     dispatch(deleteTask(taskId));
   };
 
@@ -50,14 +55,21 @@ const TaskCard = ({ task }: TaskCardProps) => {
           justifyContent: "flex-end",
         }}
       >
-        <Button size="small" variant="contained" color="primary">
+        <Button
+          size="small"
+          variant="contained"
+          color="primary"
+          onClick={handleClickEditTask}
+        >
           Edit
         </Button>
         <Button
           size="small"
           variant="outlined"
           color="error"
-          onClick={() => handleClickTaskDelete(id)}
+          onClick={() => {
+            if (id) handleClickDeleteTask(id);
+          }}
         >
           Delete
         </Button>

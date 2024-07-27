@@ -6,8 +6,6 @@ import TaskCard from "./TaskCard";
 
 const TasksContainer = () => {
   const taskList: Task[] = useAppSelector(selectList);
-  console.log("🚀 ~ TasksContainer ~ taskList:", taskList)
-
   if (!taskList.length) return <Typography>No tasks yet. Add some tasks today!</Typography>;
 
   return (

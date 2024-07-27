@@ -1,13 +1,14 @@
 import { Button, Container, Typography } from "@mui/material";
 import { useAppDispatch } from "../../../hooks/reduxHooks";
-import { addTask } from "../tasksSlice";
+import { showModal } from "../tasksSlice";
 import TasksContainer from "../components/TasksContainer";
+import GlobalModal from "../../../components/GlobalModal";
 
 const Tasks = () => {
   const dispatch = useAppDispatch();
 
   const handleClickAddTask = () => {
-    dispatch(addTask());
+    dispatch(showModal());
   };
 
   return (
@@ -18,8 +19,8 @@ const Tasks = () => {
       <Button variant="contained" sx={{ mb: 2 }} onClick={handleClickAddTask}>
         Add Task
       </Button>
-
       <TasksContainer />
+      <GlobalModal />
     </Container>
   );
 };
