@@ -10,7 +10,11 @@ export interface TasksState {
 
 // Define the initial state using that type
 export const initialState: TasksState = {
-  list: [],
+  list: [
+    { id: 1, title: "Buy Grocery", description: "desc 1", isCompleted: true },
+    { id: 2, title: "Code", description: "desc 2", isCompleted: false },
+    { id: 3, title: "Sleep", description: "desc 3", isCompleted: false },
+  ],
 };
 
 export const tasksSlice = createSlice({
@@ -20,16 +24,25 @@ export const tasksSlice = createSlice({
   reducers: {
     addTask: (state) => {
       state.list.push({
-        title: "Task 1",
+        id: state.list.length + 1,
+        title: "Wake up",
+        description: `Desc ${state.list.length + 1}`,
         isCompleted: true,
       });
+    },
+    deleteTask: (state, action) => {
+      console.log("🚀 ~ action:", action);
+      const updatedList = state.list.filter(
+        (task) => task.id !== action.payload
+      );
+      state.list = updatedList;
     },
   },
 });
 
-export const { addTask } = tasksSlice.actions;
+export const { addTask, deleteTask } = tasksSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectCount = (state: RootState) => state.tasks.list;
+export const selectList = (state: RootState) => state.tasks.list;
 
 export default tasksSlice.reducer;
