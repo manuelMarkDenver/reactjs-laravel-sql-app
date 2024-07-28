@@ -3,9 +3,15 @@ import { useAppSelector } from "../../../hooks/reduxHooks";
 import { Task } from "../../../types/Tasks";
 import { searchString, selectTasksList } from "../tasksSlice";
 import TaskCard from "./TaskCard";
+import { useGetTasksQuery } from "../services/apiSlice";
 
 const TasksContainer = () => {
   const taskList: Task[] = useAppSelector(selectTasksList);
+
+  const { data: tasksFromRtk, error, isLoading } = useGetTasksQuery();
+  console.log("🚀 ~ TasksContainer ~ isLoading:", isLoading)
+  console.log("🚀 ~ TasksContainer ~ error:", error)
+  console.log("🚀 ~ TasksContainer ~ tasksFromRtk:", tasksFromRtk)
 
   const searchStr = useAppSelector(searchString);
   const filteredTasks = taskList.filter((task) =>

@@ -1,19 +1,22 @@
-# Dockerfile for React App
-FROM node:18 AS build
+# frontend/Dockerfile
 
+# Use the official node image as the base image
+FROM node:18
+
+# Set the working directory
 WORKDIR /app
 
+# Copy the package.json and package-lock.json files
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
+# Copy the rest of the application
 COPY . .
-RUN npm run build
 
-# Use a smaller image for the final stage
-FROM nginx:alpine
+# Expose the port the app runs on
+EXPOSE 5173
 
-# Change build to dist
-COPY --from=build /app/dist /usr/share/nginx/html  
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Start the application
+CMD ["npm", "run", "dev"]
