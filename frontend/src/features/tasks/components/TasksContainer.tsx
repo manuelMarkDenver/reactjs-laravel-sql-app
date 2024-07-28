@@ -8,8 +8,6 @@ const TasksContainer = () => {
   const taskList: Task[] = useAppSelector(selectTasksList);
 
   const searchStr = useAppSelector(searchString);
-  console.log("🚀 ~ TasksContainer ~ searchStr:", searchStr);
-
   const filteredTasks = taskList.filter((task) =>
     task.title.toLowerCase().includes(searchStr.toLowerCase())
   );

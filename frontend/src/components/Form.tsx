@@ -42,8 +42,8 @@ const FormTextField = ({ label, ...props }: any) => {
   );
 };
 
-const FormCheckBox = ({ ...props }) => {
-  const [field, meta, helpers] = useField<any>(props);
+const FormCheckBox = ({ ...props }: any) => {
+  const [field, meta, helpers] = useField(props);
 
   const { value } = meta;
   const { setValue } = helpers;
@@ -51,7 +51,7 @@ const FormCheckBox = ({ ...props }) => {
   return (
     <Stack direction="row" justifyContent="space-between" alignItems="center">
       <Typography>Completed</Typography>
-      <Checkbox checked={value} onChange={() => setValue(!value)} />
+      <Checkbox {...field} checked={value} onChange={() => setValue(!value)} />
     </Stack>
   );
 };
