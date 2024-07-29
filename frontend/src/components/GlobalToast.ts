@@ -10,7 +10,7 @@ type GlobalToastProps = {
   position?: POSITION;
 };
 
-const useGlobalToast = ({ type, message, position }: GlobalToastProps) => {
+const globalToast = ({ type, message, position }: GlobalToastProps) => {
   const defaultConfig = {
     position: position ? position : POSITION.TOP_RIGHT,
     autoClose: 3000,
@@ -35,4 +35,4 @@ const useGlobalToast = ({ type, message, position }: GlobalToastProps) => {
   }
 };
 
-export default useGlobalToast;
+export default globalToast;

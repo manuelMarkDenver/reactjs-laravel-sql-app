@@ -11,7 +11,7 @@ const TasksContainer = () => {
   const [filteredLocalList, setFilteredLocalList] = useState<any[]>([]);
   const taskList: Task[] = useAppSelector(selectTasksList);
 
-  const { data: tasksFromRtk, error, isLoading } = useGetTasksQuery();
+  const { data: tasksFromRtk, error, isLoading, isFetching } = useGetTasksQuery();
   const dispatch = useAppDispatch();
 
   const searchStr = useAppSelector(searchString);
@@ -33,7 +33,7 @@ const TasksContainer = () => {
     }
   }, [searchStr, taskList]);
 
-  if (isLoading) return <LinearIndeterminate />;
+  if (isLoading || isFetching) return <LinearIndeterminate />;
 
   if (error && "status" in error) return <div>Error: {error?.status}</div>;
 
@@ -52,12 +52,13 @@ const TasksContainer = () => {
       }}
     >
       <Suspense fallback={<div>Loading...</div>}>
-        <Box height="70vh" overflow="auto">
+        <Box height="60vh" overflow="auto" paddingX={3}>
           <Stack justifyContent="center" gap={2}>
             {taskListArray &&
               Array.isArray(taskListArray) &&
               taskListArray.map((task) => {
-                return <TaskCard key={task?.id} task={task} />;
+                const { id } = task;
+                return <TaskCard key={id} task={task} />;
               })}
           </Stack>
         </Box>
@@ -69,7 +70,7 @@ const TasksContainer = () => {
             color: "gray",
           }}
         >
-          {taskListArray.length} tasks found
+          {taskListArray && taskListArray.length} tasks found
         </Typography>
       </Suspense>
     </Container>

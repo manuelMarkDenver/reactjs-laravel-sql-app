@@ -1,13 +1,6 @@
 // services/apiSlice.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import useGlobalToast from "../../../components/GlobalToast";
-
-type Task = {
-  id: string;
-  title: string;
-  description: string;
-  isCompleted: boolean;
-};
+import { Task } from "../../../types/Tasks";
 
 type GetTasksResponse = Task[];
 
@@ -27,6 +20,19 @@ export const tasksApi = createApi({
               { type: "Tasks", id: "LIST" },
             ]
           : // an error occurred, but we still want to refetch this query when `{ type: 'Posts', id: 'LIST' }` is invalidated
+            [{ type: "Tasks", id: "LIST" }],
+    }),
+
+    getSingleTask: builder.query<Task, number>({
+      query: (id) => `tasks/${id}`, // URL to fetch a single task by ID
+      providesTags: (result) =>
+        result
+          ? // If the result is available, provide tags for cache invalidation
+            [
+              { type: "Tasks", id: result.id }, // Tag for the specific task
+              { type: "Tasks", id: "LIST" }, // Tag for the task list
+            ]
+          : // If there's no result (e.g., error case), provide a tag to refetch the list
             [{ type: "Tasks", id: "LIST" }],
     }),
 
@@ -60,16 +66,19 @@ export const tasksApi = createApi({
       invalidatesTags: [{ type: "Tasks", id: "LIST" }],
     }),
 
-    updateTaskStatus: builder.mutation<{ success: boolean; id: number },  number>({
+    updateTaskStatus: builder.mutation<
+      { success: boolean; id: number },
+      number
+    >({
       query: (id) => ({
         url: `tasks/${id}`,
-        method: "PUT",
+        method: "PATCH",
       }),
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
         // Optimistically update the cache with the new isCompleted status
         const patchResult = dispatch(
           tasksApi.util.updateQueryData("getTasks", undefined, (draft) => {
-            const task = draft.find((task) => task.id === id);
+            const task = draft.find((task) => task?.id === id);
             if (task) {
               task.isCompleted = !task.isCompleted;
             }
@@ -100,6 +109,7 @@ export const tasksApi = createApi({
 
 export const {
   useGetTasksQuery,
+  useGetSingleTaskQuery,
   useAddTaskMutation,
   useUpdateTaskMutation,
   useUpdateTaskStatusMutation,
@@ -107,6 +117,7 @@ export const {
 } = tasksApi;
 
 export type UseGetTasksQueryHook = typeof useGetTasksQuery;
+export type useGetSingleTaskQueryHook = typeof useGetSingleTaskQuery;
 export type UseAddTaskMutationHook = typeof useAddTaskMutation;
 export type UseUpdateTaskMutationHook = typeof useUpdateTaskMutation;
 export type useUpdateTaskStatusMutationHook =

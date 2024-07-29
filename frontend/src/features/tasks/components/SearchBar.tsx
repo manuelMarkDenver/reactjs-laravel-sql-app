@@ -14,8 +14,8 @@ const SearchBar = () => {
 
   return (
     <Stack gap={2} direction="row" alignItems="center">
-      <Typography>Search a task:</Typography>
-      <TextField value={searchStr} onChange={handleSearchStringOnChange} />
+      <Typography>Search:</Typography>
+      <TextField value={searchStr} onChange={handleSearchStringOnChange} size='small'/>
     </Stack>
   );
 };

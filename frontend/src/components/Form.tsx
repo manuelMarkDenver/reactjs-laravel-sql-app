@@ -1,19 +1,10 @@
 import { useField, FormikProps, Formik } from "formik";
 import * as yup from "yup";
-import {
-  Box,
-  Button,
-  Checkbox,
-  CircularProgress,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Checkbox, Stack, TextField, Typography } from "@mui/material";
 import { useAppDispatch } from "../hooks/reduxHooks";
-import { toast } from "react-toastify";
 import {
-  addTask as dispatchAddTask,
-  editTask,
+  // addTask,
+  // editTask,
   hideModal,
   resetTask,
 } from "../features/tasks/tasksSlice";
@@ -22,11 +13,10 @@ import {
   useUpdateTaskMutation,
 } from "../features/tasks/services/apiSlice";
 
-import SaveIcon from "@mui/icons-material/Save";
-
 import { Task } from "../types/Tasks";
 import { LoadingButton } from "@mui/lab";
-import useGlobalToast from "./GlobalToast";
+import globalToast from "./GlobalToast";
+import { useNavigate } from "react-router-dom";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -70,6 +60,8 @@ const initialValues: Omit<Task, "id"> = {
   title: "",
   description: "",
   isCompleted: false,
+  created_at: new Date(),
+  udated_at: new Date(),
 };
 
 type FormProps = {
@@ -83,6 +75,7 @@ const Form = ({ task, onClose }: FormProps) => {
   const [updateTask, { isLoading: updateLoading, error: updateError }] =
     useUpdateTaskMutation();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const isLoading = addLoading || updateLoading;
 
@@ -94,18 +87,18 @@ const Form = ({ task, onClose }: FormProps) => {
           // dispatch(editTask({ ...values }));
           updateTask(values)
             .then((fulfilled) => {
-              useGlobalToast({
+              globalToast({
                 type: "success",
                 message: "Task Updated successfully",
               });
               console.log(fulfilled);
             })
             .catch((rejected) => {
-              useGlobalToast({
+              globalToast({
                 type: "error",
                 message: rejected,
               });
-              return console.error(rejected);
+              return console.error(rejected && updateError);
             })
             .finally(() => {
               dispatch(hideModal());
@@ -116,18 +109,19 @@ const Form = ({ task, onClose }: FormProps) => {
             await addTask(values)
               .unwrap()
               .then((fulfilled) => {
-                useGlobalToast({
+                globalToast({
                   type: "success",
                   message: "Task added successfully",
                 });
+                navigate(`/tasks/${fulfilled?.id}`);
                 console.log(fulfilled);
               })
               .catch((rejected) => {
-                useGlobalToast({
+                globalToast({
                   type: "error",
                   message: rejected,
                 });
-                return console.error(rejected);
+                return console.error(rejected && addError);
               })
               .finally(() => {
                 dispatch(hideModal());
@@ -168,8 +162,6 @@ const Form = ({ task, onClose }: FormProps) => {
                 <LoadingButton
                   autoFocus
                   loading={isLoading}
-                  loadingPosition="start"
-                  // startIcon={<SaveIcon />}
                   variant="contained"
                   type="submit"
                 >
@@ -178,7 +170,6 @@ const Form = ({ task, onClose }: FormProps) => {
                 <LoadingButton
                   autoFocus
                   loading={isLoading}
-                  loadingPosition="start"
                   variant="outlined"
                   onClick={onClose}
                 >
