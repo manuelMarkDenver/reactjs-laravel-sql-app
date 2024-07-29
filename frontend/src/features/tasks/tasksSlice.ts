@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../store";
 import { Task } from "../../types/Tasks";
 
-// Define a type for the slice state
 export interface TasksState {
   task: Task | null;
   list: Task[];
@@ -11,25 +10,22 @@ export interface TasksState {
   searchString: string;
 }
 
-// Define the initial state using that type
 export const initialState: TasksState = {
   task: null,
-  list: [
-    { id: 1, title: "Buy Grocery", description: "", isCompleted: true },
-    { id: 2, title: "Code", description: "desc 2", isCompleted: false },
-    { id: 3, title: "Sleep", description: "desc 3", isCompleted: false },
-  ],
+  list: [],
   modalState: false,
   searchString: "",
 };
 
 export const tasksSlice = createSlice({
   name: "tasks",
-  // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    setTasks: (state, action) => {
+      state.list = [...action.payload, ...state.list];
+    },
     addTask: (state, action) => {
-      state.list.push(action.payload);
+      state.list.unshift(action.payload);
     },
     editTask: (state, action) => {
       const updatedTaskList = state.list.map((task) => {
@@ -57,7 +53,6 @@ export const tasksSlice = createSlice({
           return task;
         }
       });
-      console.log("🚀 ~ updatedTaskList ~ updatedTaskList:", updatedTaskList);
       state.list = updatedTaskList;
     },
     deleteTask: (state, action) => {
@@ -85,6 +80,7 @@ export const tasksSlice = createSlice({
 });
 
 export const {
+  setTasks,
   addTask,
   editTask,
   completedUpdate,

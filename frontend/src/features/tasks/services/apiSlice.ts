@@ -1,11 +1,5 @@
 // services/apiSlice.ts
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type {
-  BaseQueryFn,
-  FetchArgs,
-  FetchBaseQueryError,
-  QueryDefinition,
-} from "@reduxjs/toolkit/query";
 
 type Task = {
   id: string;

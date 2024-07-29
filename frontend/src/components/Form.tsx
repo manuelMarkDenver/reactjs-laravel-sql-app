@@ -9,14 +9,14 @@ import {
   Typography,
 } from "@mui/material";
 import { Task } from "../types/Tasks";
-import { useAppDispatch, useAppSelector } from "../hooks/reduxHooks";
+import { useAppDispatch } from "../hooks/reduxHooks";
 import {
-  addTask,
+  addTask as dispatchAddTask,
   editTask,
   hideModal,
   resetTask,
-  selectTasksList,
 } from "../features/tasks/tasksSlice";
+import { useAddTaskMutation } from "../features/tasks/services/apiSlice";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
@@ -68,17 +68,23 @@ type FormProps = {
 };
 
 const Form = ({ task, onClose }: FormProps) => {
-  const tasksList = useAppSelector(selectTasksList);
+  const [addTask, { isLoading, error }] = useAddTaskMutation();
   const dispatch = useAppDispatch();
 
   return (
     <Formik
       initialValues={task ? task : initialValues}
-      onSubmit={(values) => {
+      onSubmit={async (values) => {
         if (task) {
           dispatch(editTask({ ...values }));
         } else {
-          dispatch(addTask({ id: tasksList.length + 1, ...values }));
+          try {
+            const newTask = await addTask(values);
+            dispatch(dispatchAddTask(newTask));
+          } catch (err) {
+            console.error(err);
+          }
+          // dispatch(addTask(values));
         }
         dispatch(hideModal());
         dispatch(resetTask());

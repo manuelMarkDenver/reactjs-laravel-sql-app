@@ -62,7 +62,7 @@ const TaskCard = ({ task }: TaskCardProps) => {
           variant="body2"
           sx={{
             fontStyle: "italic",
-            color: "gray"
+            color: "gray",
           }}
         >
           {description && description.length > 0 ? description : ""}
