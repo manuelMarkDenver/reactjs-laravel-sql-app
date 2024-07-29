@@ -84,12 +84,12 @@ const Form = ({ task, onClose }: FormProps) => {
         if (task) {
           try {
             await updateTask(values).unwrap();
+            dispatch(hideModal());
+            dispatch(resetTask());
             globalToast({
               type: "success",
               message: "Task Updated successfully",
             });
-            dispatch(hideModal());
-            dispatch(resetTask());
           } catch (err) {
             globalToast({
               type: "error",
@@ -99,14 +99,14 @@ const Form = ({ task, onClose }: FormProps) => {
         } else {
           try {
             const fulfilled = await addTask(values).unwrap();
+            dispatch(hideModal());
+            dispatch(resetTask());
             globalToast({
               type: "success",
               message: "Task added successfully",
             });
             navigate(`/tasks/${fulfilled?.id}`);
 
-            dispatch(hideModal());
-            dispatch(resetTask());
             // dispatch(dispatchAddTask(newTask?.data));
           } catch (err) {
             console.error(err);
