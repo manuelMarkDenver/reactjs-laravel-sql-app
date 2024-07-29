@@ -1,7 +1,12 @@
 import { Box, Container, Stack, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../hooks/reduxHooks";
 import { Task } from "../../../types/Tasks";
-import { searchString, selectTasksList, setTasks } from "../tasksSlice";
+import {
+  searchString,
+  selectTasksList,
+  setListLoading,
+  setTasks,
+} from "../tasksSlice";
 import TaskCard from "./TaskCard";
 import { useGetTasksQuery } from "../services/apiSlice";
 import { Suspense, useEffect, useState } from "react";
@@ -11,7 +16,12 @@ const TasksContainer = () => {
   const [filteredLocalList, setFilteredLocalList] = useState<any[]>([]);
   const taskList: Task[] = useAppSelector(selectTasksList);
 
-  const { data: tasksFromRtk, error, isLoading, isFetching } = useGetTasksQuery();
+  const {
+    data: tasksFromRtk,
+    error,
+    isLoading,
+    isFetching,
+  } = useGetTasksQuery();
   const dispatch = useAppDispatch();
 
   const searchStr = useAppSelector(searchString);
@@ -21,8 +31,9 @@ const TasksContainer = () => {
   useEffect(() => {
     if (taskList.length === 0 && tasksFromRtk) {
       dispatch(setTasks(tasksFromRtk));
+      dispatch(setListLoading(isFetching));
     }
-  }, [taskList, tasksFromRtk, dispatch]);
+  }, [taskList, tasksFromRtk, dispatch, isFetching]);
 
   useEffect(() => {
     if (tasksFromRtk && tasksFromRtk.length > 0 && searchStr.length > 0) {

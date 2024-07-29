@@ -51,37 +51,12 @@ export const tasksApi = createApi({
         method: "PUT",
         body: patch,
       }),
+      
       async onQueryStarted({ id, ...patch }, { dispatch, queryFulfilled }) {
         const patchResult = dispatch(
-          tasksApi.util.updateQueryData("getTasks", id, (draft) => {
+          // @ts-expect-error
+          tasksApi.util.updateQueryData("getTasks", id!, (draft) => {
             Object.assign(draft, patch);
-          })
-        );
-        try {
-          await queryFulfilled;
-        } catch {
-          patchResult.undo();
-        }
-      },
-      invalidatesTags: [{ type: "Tasks", id: "LIST" }],
-    }),
-
-    updateTaskStatus: builder.mutation<
-      { success: boolean; id: number },
-      number
-    >({
-      query: (id) => ({
-        url: `tasks/${id}`,
-        method: "PATCH",
-      }),
-      async onQueryStarted(id, { dispatch, queryFulfilled }) {
-        // Optimistically update the cache with the new isCompleted status
-        const patchResult = dispatch(
-          tasksApi.util.updateQueryData("getTasks", undefined, (draft) => {
-            const task = draft.find((task) => task?.id === id);
-            if (task) {
-              task.isCompleted = !task.isCompleted;
-            }
           })
         );
         try {
@@ -100,9 +75,7 @@ export const tasksApi = createApi({
           method: "DELETE",
         };
       },
-      invalidatesTags: (result, error, id) => {
-        return [{ type: "Tasks", id }];
-      },
+      invalidatesTags: [{ type: "Tasks", id: "LIST" }],
     }),
   }),
 });
@@ -112,7 +85,6 @@ export const {
   useGetSingleTaskQuery,
   useAddTaskMutation,
   useUpdateTaskMutation,
-  useUpdateTaskStatusMutation,
   useDeleteTaskMutation,
 } = tasksApi;
 
@@ -120,6 +92,4 @@ export type UseGetTasksQueryHook = typeof useGetTasksQuery;
 export type useGetSingleTaskQueryHook = typeof useGetSingleTaskQuery;
 export type UseAddTaskMutationHook = typeof useAddTaskMutation;
 export type UseUpdateTaskMutationHook = typeof useUpdateTaskMutation;
-export type useUpdateTaskStatusMutationHook =
-  typeof useUpdateTaskStatusMutation;
 export type UseDeleteTaskMutationHook = typeof useDeleteTaskMutation;

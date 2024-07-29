@@ -61,7 +61,7 @@ const initialValues: Omit<Task, "id"> = {
   description: "",
   isCompleted: false,
   created_at: new Date(),
-  udated_at: new Date(),
+  updated_at: new Date(),
 };
 
 type FormProps = {
@@ -70,10 +70,8 @@ type FormProps = {
 };
 
 const Form = ({ task, onClose }: FormProps) => {
-  const [addTask, { isLoading: addLoading, error: addError }] =
-    useAddTaskMutation();
-  const [updateTask, { isLoading: updateLoading, error: updateError }] =
-    useUpdateTaskMutation();
+  const [addTask, { isLoading: addLoading }] = useAddTaskMutation();
+  const [updateTask, { isLoading: updateLoading }] = useUpdateTaskMutation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -84,52 +82,38 @@ const Form = ({ task, onClose }: FormProps) => {
       initialValues={task ? task : initialValues}
       onSubmit={async (values) => {
         if (task) {
-          // dispatch(editTask({ ...values }));
-          updateTask(values)
-            .then((fulfilled) => {
-              globalToast({
-                type: "success",
-                message: "Task Updated successfully",
-              });
-              console.log(fulfilled);
-            })
-            .catch((rejected) => {
-              globalToast({
-                type: "error",
-                message: rejected,
-              });
-              return console.error(rejected && updateError);
-            })
-            .finally(() => {
-              dispatch(hideModal());
-              dispatch(resetTask());
+          try {
+            await updateTask(values).unwrap();
+            globalToast({
+              type: "success",
+              message: "Task Updated successfully",
             });
+            dispatch(hideModal());
+            dispatch(resetTask());
+          } catch (err) {
+            globalToast({
+              type: "error",
+              message: `Error: ${err}`,
+            });
+          }
         } else {
           try {
-            await addTask(values)
-              .unwrap()
-              .then((fulfilled) => {
-                globalToast({
-                  type: "success",
-                  message: "Task added successfully",
-                });
-                navigate(`/tasks/${fulfilled?.id}`);
-                console.log(fulfilled);
-              })
-              .catch((rejected) => {
-                globalToast({
-                  type: "error",
-                  message: rejected,
-                });
-                return console.error(rejected && addError);
-              })
-              .finally(() => {
-                dispatch(hideModal());
-                dispatch(resetTask());
-              });
+            const fulfilled = await addTask(values).unwrap();
+            globalToast({
+              type: "success",
+              message: "Task added successfully",
+            });
+            navigate(`/tasks/${fulfilled?.id}`);
+
+            dispatch(hideModal());
+            dispatch(resetTask());
             // dispatch(dispatchAddTask(newTask?.data));
           } catch (err) {
             console.error(err);
+            globalToast({
+              type: "error",
+              message: `Error: ${err}`,
+            });
           }
           // dispatch(addTask(values));
         }

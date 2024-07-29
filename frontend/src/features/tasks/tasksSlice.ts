@@ -6,6 +6,7 @@ import { Task } from "../../types/Tasks";
 export interface TasksState {
   task: Task | null;
   list: Task[];
+  listIsLoading: boolean;
   modalState: boolean;
   searchString: string;
 }
@@ -13,6 +14,7 @@ export interface TasksState {
 export const initialState: TasksState = {
   task: null,
   list: [],
+  listIsLoading: false,
   modalState: false,
   searchString: "",
 };
@@ -23,6 +25,9 @@ export const tasksSlice = createSlice({
   reducers: {
     setTasks: (state, action) => {
       state.list = [...action.payload, ...state.list];
+    },
+    setListLoading: (state, action) => {
+      state.listIsLoading = action.payload;
     },
     addTask: (state, action) => {
       state.list.unshift(action.payload);
@@ -81,6 +86,7 @@ export const tasksSlice = createSlice({
 
 export const {
   setTasks,
+  setListLoading,
   addTask,
   editTask,
   completedUpdate,
@@ -99,5 +105,7 @@ export const selectTasksList = (state: RootState) => state.tasks.list;
 export const modalState = (state: RootState) => state.tasks.modalState;
 
 export const searchString = (state: RootState) => state.tasks.searchString;
+
+export const listIsLoading = (state: RootState) => state.tasks.listIsLoading;
 
 export default tasksSlice.reducer;

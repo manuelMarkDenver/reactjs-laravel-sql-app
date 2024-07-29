@@ -1,9 +1,7 @@
 import {
-  Box,
   Card,
   CardActions,
   CardContent,
-  Checkbox,
   CircularProgress,
   Stack,
   Typography,
@@ -12,7 +10,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   useDeleteTaskMutation,
   useGetSingleTaskQuery,
-  useUpdateTaskStatusMutation,
 } from "./services/apiSlice";
 import { readableDate } from "../../helpers";
 import globalToast from "../../components/GlobalToast";
@@ -34,31 +31,8 @@ const Task = () => {
     isLoading: getSingleTaskLoading,
     isFetching,
   } = useGetSingleTaskQuery(id as number);
-  console.log("🚀 ~ Task ~ isFetching:", isFetching);
-  console.log("🚀 ~ Task ~ getSingleTaskLoading:", getSingleTaskLoading);
-
-  const [updateTaskStatus, { isLoading: updateTaskLoading }] =
-    useUpdateTaskStatusMutation();
 
   const [deleteTask, { isLoading: deleteLoading }] = useDeleteTaskMutation();
-
-  const handleOnchangeIsCompleted = (id: any) => {
-    updateTaskStatus(id)
-      .then((fulfilled) => {
-        globalToast({
-          type: "success",
-          message: "Task status updated successfully",
-        });
-        console.log(fulfilled);
-      })
-      .catch((rejected) => {
-        globalToast({
-          type: "error",
-          message: rejected,
-        });
-        return console.error(rejected);
-      });
-  };
 
   const handleClickDeleteTask = (taskId: number) => {
     deleteTask(taskId)
@@ -84,9 +58,7 @@ const Task = () => {
     dispatch(selectTask(task));
   };
 
-  const isProcessLoading =
-    deleteLoading || updateTaskLoading || getSingleTaskLoading || isFetching;
-  console.log("xx", isProcessLoading);
+  const isProcessLoading = deleteLoading || getSingleTaskLoading || isFetching;
 
   if (isProcessLoading)
     return (
@@ -94,6 +66,7 @@ const Task = () => {
         <CircularProgress size={20} /> <Typography>Loading task...</Typography>
       </Stack>
     );
+
   if (error) return <div>Error occurred!</div>;
   if (!task) return <div>No task found.</div>;
 
@@ -103,21 +76,19 @@ const Task = () => {
   };
 
   return (
-    <Card sx={{
-      py: 2,
-      px: 1
-    }}>
+    <Card
+      sx={{
+        py: 2,
+        px: 1,
+      }}
+    >
       <CardContent>
         <Stack direction="row" justifyContent="space-between">
           <Stack gap={1}>
             <Typography>ID: {id}</Typography>
             <Typography>Title: {title}</Typography>
             <Typography>Description: {description}</Typography>
-            <Typography
-              component="span"
-            >
-              Completed?:
-            </Typography> {" "}
+            <Typography component="span">Completed?:</Typography>{" "}
             <Typography
               component="span"
               color={booleanChecker(isCompleted) ? "green" : "red"}
