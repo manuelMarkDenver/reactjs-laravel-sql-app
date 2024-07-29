@@ -40,9 +40,9 @@ This command will start all the services defined in your Docker Compose file and
 ### 4. Access the Application
 After starting the containers, you can access the application components as follows:
 
-Frontend: Open your web browser and navigate to http://localhost:3000 to access the React frontend.
+Frontend: Open your web browser and navigate to http://localhost:5173 to access the React frontend.
 Backend: The Laravel backend will be accessible at http://localhost:8000.
-Database: The MySQL database can be accessed at localhost:3306 with the credentials defined in your Docker Compose configuration.
+Database: The MySQL database can be accessed at localhost:3306 with the credentials defined in the Docker Compose configuration.
 
 ### 5. Stopping the Containers
 To stop and remove the running containers, use:
