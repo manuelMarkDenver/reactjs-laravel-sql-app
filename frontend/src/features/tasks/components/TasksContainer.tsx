@@ -4,31 +4,19 @@ import { Task } from "../../../types/Tasks";
 import { searchString, selectTasksList, setTasks } from "../tasksSlice";
 import TaskCard from "./TaskCard";
 import { useGetTasksQuery } from "../services/apiSlice";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
+import LinearIndeterminate from "../../../components/LinearLoader";
 
 const TasksContainer = () => {
+  const [filteredLocalList, setFilteredLocalList] = useState<any[]>([]);
   const taskList: Task[] = useAppSelector(selectTasksList);
-  console.log("🚀 ~ TasksContainer ~ taskList:", taskList);
 
   const { data: tasksFromRtk, error, isLoading } = useGetTasksQuery();
-
   const dispatch = useAppDispatch();
 
   const searchStr = useAppSelector(searchString);
-  console.log("🚀 ~ TasksContainer ~ searchStr:", searchStr);
-
-  // const filteredTasks =
-  //   taskList &&
-  //   taskList.length > 0 &&
-  //   Array.isArray(taskList) &&
-  //   taskList.filter((task) =>
-  //     task.title.toLowerCase().includes(searchStr.toLowerCase())
-  //   );
 
   const hasTask = () => taskList.length > 0;
-
-  // const hasFilteredTask = () =>
-  //   filteredTasks && Array.isArray(filteredTasks) && filteredTasks.length > 0;
 
   useEffect(() => {
     if (taskList.length === 0 && tasksFromRtk) {
@@ -36,19 +24,24 @@ const TasksContainer = () => {
     }
   }, [taskList, tasksFromRtk, dispatch]);
 
-  if (isLoading) return <div>Loading from rtk</div>;
+  useEffect(() => {
+    if (tasksFromRtk && tasksFromRtk.length > 0 && searchStr.length > 0) {
+      const filteredList = tasksFromRtk.filter((task) =>
+        task.title.toLowerCase().includes(searchStr.toLowerCase())
+      );
+      setFilteredLocalList(filteredList);
+    }
+  }, [searchStr, taskList]);
+
+  if (isLoading) return <LinearIndeterminate />;
 
   if (error && "status" in error) return <div>Error: {error?.status}</div>;
 
   if (!hasTask)
     return <Typography>No task yet. Add some tasks today!</Typography>;
 
-  // if (!hasFilteredTask)
-  //   return (
-  //     <Typography fontStyle="italic">0 task found on "{searchStr}"</Typography>
-  //   );
-
-  // const taskListArray = searchStr.length === 0 ? taskList : filteredTasks;
+  const taskListArray =
+    searchStr.length === 0 ? tasksFromRtk : filteredLocalList;
 
   return (
     <Container
@@ -61,9 +54,9 @@ const TasksContainer = () => {
       <Suspense fallback={<div>Loading...</div>}>
         <Box height="70vh" overflow="auto">
           <Stack justifyContent="center" gap={2}>
-            {taskList &&
-              Array.isArray(taskList) &&
-              taskList.map((task) => {
+            {taskListArray &&
+              Array.isArray(taskListArray) &&
+              taskListArray.map((task) => {
                 return <TaskCard key={task?.id} task={task} />;
               })}
           </Stack>
@@ -76,7 +69,7 @@ const TasksContainer = () => {
             color: "gray",
           }}
         >
-          {taskList.length} tasks found
+          {taskListArray.length} tasks found
         </Typography>
       </Suspense>
     </Container>

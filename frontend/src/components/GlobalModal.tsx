@@ -25,6 +25,7 @@ const GlobalModal = () => {
         open={openModal}
         onClose={handleClose}
         aria-labelledby="responsive-dialog-title"
+        keepMounted
       >
         <DialogTitle id="responsive-dialog-title">
           {task ? `Edit "${task?.title}" Task` : "Add Task"}

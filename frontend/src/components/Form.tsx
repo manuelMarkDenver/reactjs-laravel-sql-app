@@ -4,23 +4,33 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
-import { Task } from "../types/Tasks";
 import { useAppDispatch } from "../hooks/reduxHooks";
+import { toast } from "react-toastify";
 import {
   addTask as dispatchAddTask,
   editTask,
   hideModal,
   resetTask,
 } from "../features/tasks/tasksSlice";
-import { useAddTaskMutation } from "../features/tasks/services/apiSlice";
+import {
+  useAddTaskMutation,
+  useUpdateTaskMutation,
+} from "../features/tasks/services/apiSlice";
+
+import SaveIcon from "@mui/icons-material/Save";
+
+import { Task } from "../types/Tasks";
+import { LoadingButton } from "@mui/lab";
+import useGlobalToast from "./GlobalToast";
 
 const validationSchema = yup.object({
   title: yup.string().required("Title is required"),
-  description: yup.string().optional(),
+  description: yup.string().nullable().optional(),
 });
 
 type FormValues = Omit<Task, "id">;
@@ -68,26 +78,67 @@ type FormProps = {
 };
 
 const Form = ({ task, onClose }: FormProps) => {
-  const [addTask, { isLoading, error }] = useAddTaskMutation();
+  const [addTask, { isLoading: addLoading, error: addError }] =
+    useAddTaskMutation();
+  const [updateTask, { isLoading: updateLoading, error: updateError }] =
+    useUpdateTaskMutation();
   const dispatch = useAppDispatch();
+
+  const isLoading = addLoading || updateLoading;
 
   return (
     <Formik
       initialValues={task ? task : initialValues}
       onSubmit={async (values) => {
         if (task) {
-          dispatch(editTask({ ...values }));
+          // dispatch(editTask({ ...values }));
+          updateTask(values)
+            .then((fulfilled) => {
+              useGlobalToast({
+                type: "success",
+                message: "Task Updated successfully",
+              });
+              console.log(fulfilled);
+            })
+            .catch((rejected) => {
+              useGlobalToast({
+                type: "error",
+                message: rejected,
+              });
+              return console.error(rejected);
+            })
+            .finally(() => {
+              dispatch(hideModal());
+              dispatch(resetTask());
+            });
         } else {
           try {
-            const newTask = await addTask(values);
-            dispatch(dispatchAddTask(newTask));
+            await addTask(values)
+              .unwrap()
+              .then((fulfilled) => {
+                useGlobalToast({
+                  type: "success",
+                  message: "Task added successfully",
+                });
+                console.log(fulfilled);
+              })
+              .catch((rejected) => {
+                useGlobalToast({
+                  type: "error",
+                  message: rejected,
+                });
+                return console.error(rejected);
+              })
+              .finally(() => {
+                dispatch(hideModal());
+                dispatch(resetTask());
+              });
+            // dispatch(dispatchAddTask(newTask?.data));
           } catch (err) {
             console.error(err);
           }
           // dispatch(addTask(values));
         }
-        dispatch(hideModal());
-        dispatch(resetTask());
       }}
       validationSchema={validationSchema}
       enableReinitialize
@@ -114,12 +165,25 @@ const Form = ({ task, onClose }: FormProps) => {
                 label="Completed"
               />
               <Stack direction="row" gap={1} justifyContent="flex-end">
-                <Button autoFocus variant="contained" type="submit">
+                <LoadingButton
+                  autoFocus
+                  loading={isLoading}
+                  loadingPosition="start"
+                  // startIcon={<SaveIcon />}
+                  variant="contained"
+                  type="submit"
+                >
                   Submit
-                </Button>
-                <Button autoFocus onClick={onClose} variant="outlined">
+                </LoadingButton>
+                <LoadingButton
+                  autoFocus
+                  loading={isLoading}
+                  loadingPosition="start"
+                  variant="outlined"
+                  onClick={onClose}
+                >
                   Cancel
-                </Button>
+                </LoadingButton>
               </Stack>
             </Stack>
           </Box>
