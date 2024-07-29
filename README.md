@@ -26,5 +26,4 @@ cd your-repo
 2. Build the Containers
 Use Docker Compose to build the Docker containers defined in your docker-compose.yml file:
 
-```bash
 docker-compose build
