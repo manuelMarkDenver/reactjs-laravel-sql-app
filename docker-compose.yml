@@ -4,8 +4,10 @@ services:
   react:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
+      target: production 
     ports:
-      - "5173:5173"
+      - "5173:80"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -67,6 +69,19 @@ services:
       - "8443:80"
     networks:
       - db
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - react
+      - backend
+    networks:
+      - app
 
 volumes:
   mysql:
