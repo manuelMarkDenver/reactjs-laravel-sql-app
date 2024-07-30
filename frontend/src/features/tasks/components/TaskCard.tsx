@@ -63,6 +63,7 @@ const TaskCard = ({ task }: TaskCardProps) => {
             sx={{
               fontStyle: "italic",
               color: "gray",
+              textDecoration: isCompleted ? "line-through" : "unset",
             }}
           >
             {description && description.length > 0
