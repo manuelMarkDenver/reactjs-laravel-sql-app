@@ -20,7 +20,7 @@ Follow these instructions to build and start the application using Docker Compos
 First, clone the repository to your local machine using Git:
 
 
-[git clone https://github.com/manuelMarkDenver/reactjs-laravel-sql-app.git](https://github.com/manuelMarkDenver/reactjs-laravel-sql-app.git)
+git clone [https://github.com/manuelMarkDenver/reactjs-laravel-sql-app.git](https://github.com/manuelMarkDenver/reactjs-laravel-sql-app.git)
 cd to the new cloned repo
 
 
